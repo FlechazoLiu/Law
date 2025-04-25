@@ -1,0 +1,216 @@
+% 刑法91、92条形式化项目文档
+
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fontspec}
+\usepackage{underscore} % 解决下划线问题
+\usepackage{amsthm}     % 添加amsthm包以支持definition环境
+
+% 定义定理环境
+\newtheorem{definition}{定义}
+
+\setmainfont{SimSun} % 或其他安装在您系统上的中文字体
+\definecolor{codeblue}{RGB}{0, 0, 255}
+
+% 修改lean命令，避免使用\verb
+\newcommand{\lean}[1]{{\color{codeblue}\texttt{\detokenize{#1}}}}
+\newcommand{\leanok}{\textbf{✓}}
+\newcommand{\uses}[1]{\textit{依赖: #1}}
+
+\begin{document}
+\title{刑法第91、92条形式化文档}
+\author{Lean4形式化实现}
+\date{\today}
+
+\maketitle
+
+\section{财产类型定义}
+
+\subsection{[基础类型]}
+
+\begin{definition}\label{PropertyPurpose}
+\leanok
+\lean{PropertyPurpose}
+\uses{}
+财产用途类型，用于区分一般用途、扶贫、公益事业等不同用途的财产。
+\end{definition}
+
+\begin{definition}\label{OwnerType}
+\leanok
+\lean{OwnerType}
+\uses{}
+财产所有者类型，包括国家、集体、公民个人、家庭、个体户等不同的所有权主体。
+\end{definition}
+
+\begin{definition}\label{CitizenPropertyType}
+\leanok
+\lean{CitizenPropertyType}
+\uses{}
+公民财产类型，区分合法收入、储蓄、房屋和其他生活资料等不同类型的公民财产。
+\end{definition}
+
+\begin{definition}\label{ResourceType}
+\leanok
+\lean{ResourceType}
+\uses{}
+资源类型，区分生产资料和消费资料。
+\end{definition}
+
+\begin{definition}\label{FinancialAsset}
+\leanok
+\lean{FinancialAsset}
+\uses{}
+金融资产类型，包括股票、股份、债券和其他金融资产。
+\end{definition}
+
+\begin{definition}\label{ManagementInstitution}
+\leanok
+\lean{ManagementInstitution}
+\uses{}
+管理机构类型，包括国家机关、国有公司、国有企业、集体企业和人民团体。
+\end{definition}
+
+\subsection{[集体相关定义]}
+
+\begin{definition}\label{CollectiveBaseType}
+\leanok
+\lean{CollectiveBaseType}
+\uses{}
+集体基础类型，包括经济性质集体和社会性质集体。
+\end{definition}
+
+\begin{definition}\label{CollectiveForm}
+\leanok
+\lean{CollectiveForm}
+\uses{}
+集体组织形式，包括农村经济组织、城镇经济组织等不同形式的集体。
+\end{definition}
+
+\begin{definition}\label{CollectiveScale}
+\leanok
+\lean{CollectiveScale}
+\uses{}
+集体规模，区分小型、中型和大型集体。
+\end{definition}
+
+\begin{definition}\label{Collective}
+\leanok
+\lean{Collective}
+\uses{CollectiveBaseType, CollectiveForm, CollectiveScale}
+集体结构，描述集体的基本特征，包括集体类型、形式、规模、名称等属性。
+\end{definition}
+
+\subsection{[财产结构]}
+
+\begin{definition}\label{PropertyState}
+\leanok
+\lean{PropertyState}
+\uses{}
+财产状态，表示财产是否处于管理、使用或运输中的状态。
+\end{definition}
+
+\begin{definition}\label{Property}
+\leanok
+\lean{Property}
+\uses{OwnerType, PropertyPurpose, ManagementInstitution, PropertyState, CitizenPropertyType, ResourceType, FinancialAsset, Collective}
+财产基本结构，包含财产的所有基本属性，如所有者、资产名称、价值、用途等。
+\end{definition}
+
+\section{公共财产与私有财产}
+
+\subsection{[第九十一条] (公共财产的含义)}
+
+【公共财产的含义】本法所称公共财产，是指下列财产：\\
+（一）国有财产；\\
+（二）劳动群众集体所有的财产；\\
+（三）用于扶贫和其他公益事业的社会捐助或者专项基金的财产 。\\
+在国家机关、国有公司、企业、集体企业和人民团体管理、使用或者运输中的私人财产，以公共财产论 。
+
+\begin{definition}\label{isPublicProperty}
+\leanok
+\lean{isPublicProperty}
+\uses{Property, OwnerType, Collective, isLegalCollective, PropertyPurpose, isInSpecialState}
+本法所称公共财产，是指下列财产：
+\begin{enumerate}
+\item[(一)] 国有财产；
+\item[(二)] 劳动群众集体所有的财产；
+\item[(三)] 用于扶贫和其他公益事业的社会捐助或者专项基金的财产。
+\end{enumerate}
+在国家机关、国有公司、企业、集体企业和人民团体管理、使用或者运输中的私人财产，以公共财产论。
+\end{definition}
+
+\begin{definition}\label{isLegalCollective}
+\leanok
+\lean{isLegalCollective}
+\uses{Collective, CollectiveBaseType, CollectiveForm}
+判断一个集体是否为法律认可的劳动群众集体，用于公共财产认定。
+该函数检查集体是否满足：
+\begin{enumerate}
+\item 是经济性质的集体
+\item 组织形式为农村经济组织、城镇经济组织或其他劳动群众集体
+\item 具有明确的成员范围
+\item 具有财产所有权
+\end{enumerate}
+\end{definition}
+
+\begin{definition}\label{isInSpecialState}
+\leanok
+\lean{isInSpecialState}
+\uses{Property, ManagementInstitution, PropertyState}
+判断私人财产是否处于国家机关、国有公司、企业、集体企业和人民团体管理、使用或运输中的状态。
+该函数检查：
+\begin{enumerate}
+\item 管理机构类型是否为国家机关、国有公司、国有企业、集体企业或人民团体
+\item 财产状态是否为管理中、使用中或运输中
+\end{enumerate}
+\end{definition}
+
+\subsection{[第九十二条] (私人所有财产的含义)}
+
+【私人所有财产的含义】本法所称公民私人所有的财产，是指下列财产：\\
+（一）公民的合法收入、储蓄、房屋和其他生活资料；\\
+（二）依法归个人、家庭所有的生产资料；\\
+（三）个体户和私营企业的合法财产；\\
+（四）依法归个人所有的股份、股票、债券和其他财产 。
+
+\begin{definition}\label{isPrivateProperty}
+\leanok
+\lean{isPrivateProperty}
+\uses{Property, isPublicProperty, OwnerType, CitizenPropertyType, ResourceType, FinancialAsset}
+本法所称公民私人所有的财产，是指下列财产：
+\begin{enumerate}
+\item[(一)] 公民的合法收入、储蓄、房屋和其他生活资料；
+\item[(二)] 依法归个人、家庭所有的生产资料；
+\item[(三)] 个体户和私营企业的合法财产；
+\item[(四)] 依法归个人所有的股份、股票、债券和其他财产。
+\end{enumerate}
+\end{definition}
+
+\section{法定财产与侵犯财产权}
+
+\subsection{[法定财产类型]}
+
+\begin{definition}\label{LegalProperty}
+\leanok
+\lean{LegalProperty}
+\uses{Property, isPublicProperty, isPrivateProperty}
+法定财产类型，将财产分为公共财产和私有财产两大类，根据刑法第91条和第92条的规定进行判定。
+\end{definition}
+
+\subsection{[侵犯财产权判定]}
+
+\begin{definition}\label{isPropertyRightsViolation}
+\leanok
+\lean{isPropertyRightsViolation}
+\uses{Property}
+侵犯财产权判定，判断财产所有权变更是否合法。判定标准：
+\begin{enumerate}
+\item 财产所有者发生变更
+\item 变更过程不具备合法依据
+\end{enumerate}
+\end{definition}
+
+\end{document} 
