@@ -21,6 +21,12 @@ structure Property where
 def isInSpecialState (p : Property) : Bool :=
   p.state.isManaged || p.state.isUsed || p.state.isTransported
 
+/- 判断财产是否为托管财产（辅助方法，但实际分类为公共财产） -/
+def isInTrust (p : Property) : Bool :=
+  (p.owner = OwnerType.Citizen) &&
+  p.isLegal &&
+  (p.manager.isSome || isInSpecialState p)
+
 /- 公共财产判定（第九十一条） -/
 def isPublicProperty (p : Property) : Prop :=
   match p.owner with

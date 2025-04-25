@@ -127,6 +127,13 @@
 在国家机关、国有公司、企业、集体企业和人民团体管理、使用或者运输中的私人财产，以公共财产论。
 \end{definition}
 
+\begin{definition}\label{PublicProperty}
+\leanok
+\lean{PublicProperty}
+\uses{Property, isPublicProperty}
+公共财产类型，表示符合第九十一条规定的公共财产。包含一般Property的所有属性，并附加证明表明其满足公共财产的判定条件。
+\end{definition}
+
 \begin{definition}\label{isLegalCollective}
 \leanok
 \lean{isLegalCollective}
@@ -174,6 +181,13 @@
 \end{enumerate}
 \end{definition}
 
+\begin{definition}\label{PrivateProperty}
+\leanok
+\lean{PrivateProperty}
+\uses{Property, isPrivateProperty}
+私有财产类型，表示符合第九十二条规定的私有财产。包含一般Property的所有属性，并附加证明表明其满足私有财产的判定条件。
+\end{definition}
+
 \section{法定财产与侵犯财产权}
 
 \subsection{[法定财产类型]}
@@ -181,7 +195,7 @@
 \begin{definition}\label{LegalProperty}
 \leanok
 \lean{LegalProperty}
-\uses{Property, isPublicProperty, isPrivateProperty}
+\uses{PublicProperty, PrivateProperty}
 法定财产类型，将财产分为公共财产和私有财产两大类，根据刑法第91条和第92条的规定进行判定。
 \end{definition}
 

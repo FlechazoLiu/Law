@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2025.1.2)  25 APR 2025 23:51
+This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2025.1.2)  26 APR 2025 00:10
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -536,15 +536,15 @@ L3 programming layer <2022/07/14>
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package rerunfilecheck Info: File `print.out' has not changed.
-(rerunfilecheck)             Checksum: D2FA29E3D883D45F1DC8C5727A508805;1527.
+(rerunfilecheck)             Checksum: 9FF969C647D0AE9854F57E11F3631AB6;1527.
  ) 
 Here is how much of TeX's memory you used:
- 16835 strings out of 474773
- 358265 string characters out of 5751500
+ 16837 strings out of 474773
+ 358298 string characters out of 5751500
  1947842 words of memory out of 5000000
- 38608 multiletter control sequences out of 15000+600000
+ 38610 multiletter control sequences out of 15000+600000
  563388 words of font info for 68 fonts, out of 8000000 for 9000
  1509 hyphenation exceptions out of 8191
- 93i,6n,97p,590b,569s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 93i,6n,97p,590b,567s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on print.pdf (3 pages).
