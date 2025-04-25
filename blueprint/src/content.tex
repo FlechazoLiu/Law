@@ -1,32 +1,17 @@
-% 刑法91、92条形式化项目文档
-
-\documentclass{article}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{xcolor}
-\usepackage{enumitem}
-\usepackage{fontspec}
-\usepackage{underscore} % 解决下划线问题
-\usepackage{amsthm}     % 添加amsthm包以支持definition环境
-
-% 定义定理环境
-\newtheorem{definition}{定义}
-
-\setmainfont{SimSun} % 或其他安装在您系统上的中文字体
-\definecolor{codeblue}{RGB}{0, 0, 255}
-
-% 修改lean命令，避免使用\verb
-\newcommand{\lean}[1]{{\color{codeblue}\texttt{\detokenize{#1}}}}
-\newcommand{\leanok}{\textbf{✓}}
-\newcommand{\uses}[1]{\textit{依赖: #1}}
-
-\begin{document}
 \title{刑法第91、92条形式化文档}
-\author{Lean4形式化实现}
-\date{\today}
+
+
+\home{https://FlechazoLiu.github.io/Law/}
+% \github{https://github.com/reaslab/blueprint-template/}
+\dochome{https://FlechazoLiu.github.io/Law/doc/}
+
+% \home{localhost:8000}
+% \dochome{localhost:8000/doc}
 
 \maketitle
 
+
+\tableofcontents
 \section{财产类型定义}
 
 \subsection{[基础类型]}
@@ -212,5 +197,3 @@
 \item 变更过程不具备合法依据
 \end{enumerate}
 \end{definition}
-
-\end{document} 
