@@ -94,14 +94,14 @@
 \leanok
 \lean{Object}
 \uses{OwnerType}
-基础对象结构，是所有实体的基本单位，包含标识符、名称、描述、所有者、价值、合法性标记、排他性标记等基本属性。
+基础对象结构，是所有实体的基本单位，包含标识符、名称、描述、所有者、价值、合法性标记、排他性标记等基本属性。所有Object实例必须具有排他性，这是对象的核心特征，表示对象所有者可以排除他人对该对象的使用权。
 \end{definition}
 
 \begin{definition}\label{isExclusive}
 \leanok
 \lean{isExclusive}
 \uses{Object}
-排他性是指对象所有者可以排除他人对该对象的使用权。根据财产权的基本特征，所有财产对象的排他性均设置为真，而普通对象的排他性默认为假。
+排他性是指对象所有者可以排除他人对该对象的使用权。根据对象的基本特征，所有Object实例均具有排他性。此函数用于验证对象的排他性，确保所有Object及其子类型都满足这一基本特征。
 \end{definition}
 
 \subsection{[财产结构]}
@@ -116,15 +116,15 @@
 \begin{definition}\label{Property}
 \leanok
 \lean{Property}
-\uses{OwnerType, PropertyPurpose, ManagementInstitution, PropertyState, CitizenPropertyType, ResourceType, FinancialAsset, Collective}
-财产基本结构，包含财产的所有基本属性，如所有者、资产名称、价值、用途等。
+\uses{Object, PropertyPurpose, ManagementInstitution, PropertyState, CitizenPropertyType, ResourceType, FinancialAsset, Collective}
+财产基本结构，是Object的特化子类型，继承了Object的所有基本属性（如标识符、名称、所有者、排他性等），并额外添加了财产特有的属性，如用途、管理机构、财产状态等。
 \end{definition}
 
 \begin{definition}\label{createPropertyFromObject}
 \leanok
 \lean{createPropertyFromObject}
 \uses{Object, Property, PropertyPurpose}
-从基础对象创建财产的函数，该函数会检查对象是否满足成为财产的条件，并将对象转换为财产类型。在转换过程中，会将财产的排他性设置为真，体现财产权的排他性特征。
+从基础对象创建财产的函数，该函数会检查对象是否满足成为财产的条件，并将对象转换为财产类型。由于Object已经具有排他性，因此转换后的Property实例自然继承了这一特性，体现了财产权的排他性特征。
 \end{definition}
 
 \section{公共财产与私有财产}
@@ -154,7 +154,7 @@
 \leanok
 \lean{PublicProperty}
 \uses{Property, isPublicProperty}
-公共财产类型，表示符合第九十一条规定的公共财产。包含一般Property的所有属性，并附加证明表明其满足公共财产的判定条件。
+公共财产类型，表示符合第九十一条规定的公共财产。包含Property的所有属性（继承自Object的和Property特有的），并附加证明表明其满足公共财产的判定条件。
 \end{definition}
 
 \begin{definition}\label{isLegalCollective}
@@ -208,7 +208,7 @@
 \leanok
 \lean{PrivateProperty}
 \uses{Property, isPrivateProperty}
-私有财产类型，表示符合第九十二条规定的私有财产。包含一般Property的所有属性，并附加证明表明其满足私有财产的判定条件。
+私有财产类型，表示符合第九十二条规定的私有财产。包含Property的所有属性（继承自Object的和Property特有的），并附加证明表明其满足私有财产的判定条件。
 \end{definition}
 
 \section{法定财产与侵犯财产权}
@@ -240,5 +240,5 @@
 \begin{definition}\label{propertyExclusivity}
 \leanok
 \uses{Property, Object, createPropertyFromObject}
-财产的排他性是财产权的本质特征之一。通过在财产创建过程中强制设置排他性标志为真，系统保证所有财产对象都具有排他性。这一特性确保了财产所有者拥有排除他人干涉的权利，是保护财产权的重要基础。侵犯财产权的行为实质上就是违反财产排他性的行为。
+财产的排他性是财产权的本质特征之一，这一特性继承自Object的基本特征。所有Object实例都必须具有排他性，因此作为Object子类型的Property自然继承了这一特性。这一特性确保了财产所有者拥有排除他人干涉的权利，是保护财产权的重要基础。侵犯财产权的行为实质上就是违反财产排他性的行为。
 \end{definition}
