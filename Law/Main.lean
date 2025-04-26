@@ -20,7 +20,6 @@ import Law.Types.PropertyTypes
 import Law.Types.CollectiveTypes
 import Law.Property
 import Law.Legal
-import Law.Examples
 
 /- 项目文件结构说明:
    1. Law.Types.OwnerTypes - 所有者类型定义

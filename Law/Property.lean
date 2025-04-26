@@ -23,9 +23,22 @@ def isInSpecialState (p : Property) : Bool :=
 
 /- 判断财产是否为托管财产（辅助方法，但实际分类为公共财产） -/
 def isInTrust (p : Property) : Bool :=
-  (p.owner = OwnerType.Citizen) &&
+  (p.owner = OwnerType.Citizen ||
+   p.owner = OwnerType.Family ||
+   p.owner = OwnerType.IndividualBusiness ||
+   p.owner = OwnerType.PrivateEnterprise) &&
   p.isLegal &&
   (p.manager.isSome || isInSpecialState p)
+
+/- 判断管理机构是否属于第91条第二款规定的特定机构 -/
+def isSpecialManagementInstitution (manager : Option ManagementInstitution) : Bool :=
+  match manager with
+  | some ManagementInstitution.StateOrgan => true           -- 国家机关
+  | some ManagementInstitution.StateCompany => true         -- 国有公司
+  | some ManagementInstitution.StateEnterprise => true      -- 国有企业
+  | some ManagementInstitution.CollectiveEnterprise => true -- 集体企业
+  | some ManagementInstitution.PeopleGroup => true          -- 人民团体
+  | _ => false
 
 /- 公共财产判定（第九十一条） -/
 def isPublicProperty (p : Property) : Prop :=
@@ -45,9 +58,13 @@ def isPublicProperty (p : Property) : Prop :=
     p.purpose = PropertyPurpose.PovertyAlleviation || p.purpose = PropertyPurpose.PublicWelfare
   | _ =>
     -- 在国家机关、国有公司、企业、集体企业和人民团体管理、使用或者运输中的私人财产，以公共财产论（第九十一条第二款）
-    let isPrivateOwner := p.owner ∈ [OwnerType.Citizen, OwnerType.Family, OwnerType.IndividualBusiness, OwnerType.PrivateEnterprise]
-    let hasStateManagement := p.manager.isSome
-    isPrivateOwner && (hasStateManagement || isInSpecialState p)
+    let isPrivateOwner := p.owner = OwnerType.Citizen ||
+                         p.owner = OwnerType.Family ||
+                         p.owner = OwnerType.IndividualBusiness ||
+                         p.owner = OwnerType.PrivateEnterprise
+    isPrivateOwner &&
+    p.isLegal &&
+    (isSpecialManagementInstitution p.manager || isInSpecialState p)
 
 /- 私有财产判定（第九十二条） -/
 def isPrivateProperty (p : Property) : Prop :=
@@ -55,10 +72,21 @@ def isPrivateProperty (p : Property) : Prop :=
   | OwnerType.Citizen =>
     p.isLegal && (
       -- 公民的合法收入、储蓄、房屋和其他生活资料（第九十二条第一项）
-      p.citizenType.isSome ||
+      (match p.citizenType with
+       | some CitizenPropertyType.Income => true            -- 合法收入
+       | some CitizenPropertyType.Savings => true           -- 储蓄
+       | some CitizenPropertyType.Housing => true           -- 房屋
+       | some CitizenPropertyType.OtherLivingMaterials => true  -- 其他生活资料
+       | none => false) ||
+      -- 生活资料也算入第一项
       (p.resourceType = some ResourceType.LivingResources) ||
       -- 依法归个人所有的股份、股票、债券和其他财产（第九十二条第四项）
-      p.financialType.isSome
+      (match p.financialType with
+       | some FinancialAsset.Share => true  -- 股份
+       | some FinancialAsset.Stock => true  -- 股票
+       | some FinancialAsset.Bond => true   -- 债券
+       | some FinancialAsset.Other => true  -- 其他财产
+       | none => false)
     )
   | OwnerType.Family =>
     -- 依法归个人、家庭所有的生产资料（第九十二条第二项）

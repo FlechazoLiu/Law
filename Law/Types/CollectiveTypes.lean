@@ -48,10 +48,18 @@ structure Collective where
 
 /- 判断集体是否为法律认可的劳动群众集体 -/
 def isLegalCollective (c : Collective) : Bool :=
+  -- 必须是得到正式认可的集体
   c.formallyRecognized &&
+  -- 必须是经济性质的集体（劳动群众集体）
+  c.baseType = CollectiveBaseType.Economic &&
+  -- 必须具有明确的成员范围
+  c.hasDefinedMembers &&
+  -- 必须具有共同财产所有权
+  c.hasPropertyOwnership &&
+  -- 组织形式必须符合劳动群众集体的形式
   (match c.form with
-   | CollectiveForm.RuralEconomic => true
-   | CollectiveForm.UrbanEconomic => true
-   | CollectiveForm.WorkerEconomic => true
-   | CollectiveForm.Cooperative => true
+   | CollectiveForm.RuralEconomic => true     -- 农村集体经济组织
+   | CollectiveForm.UrbanEconomic => true     -- 城镇集体经济组织
+   | CollectiveForm.WorkerEconomic => true    -- 职工集体经济组织
+   | CollectiveForm.Cooperative => true       -- 合作社
    | _ => false)
