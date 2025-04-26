@@ -2,12 +2,10 @@
 import Law.Types.OwnerTypes
 import Law.Types.PropertyTypes
 import Law.Types.CollectiveTypes
+import Law.Object
 
-/- 财产基础结构 -/
-structure Property where
-  owner : OwnerType  -- 所有者类型
-  assetName : String  -- 资产名称
-  value : Nat  -- 财产价值
+/- 财产结构（扩展自Object） -/
+structure Property extends Object where
   purpose : PropertyPurpose := PropertyPurpose.General  -- 财产用途
   manager : Option ManagementInstitution := none  -- 管理机构
   state : PropertyState := {}  -- 财产状态
@@ -15,18 +13,43 @@ structure Property where
   resourceType : Option ResourceType := none  -- 资源类型
   financialType : Option FinancialAsset := none  -- 金融资产类型
   collective : Option Collective := none  -- 集体详细信息
-  isLegal : Bool := true  -- 合法性证明（默认合法）
+
+/- 从普通对象创建财产 -/
+def createPropertyFromObject (obj : Object) (purpose : PropertyPurpose := PropertyPurpose.General) : Property :=
+  if obj.canBeProperty then
+    {
+      toObject := {
+        obj with
+        isExclusive := true  -- 所有财产对象的排他性均为真
+      },  -- 继承Object的所有字段
+      purpose := purpose
+    }
+  else
+    {
+      toObject := {
+        obj with
+        isLegal := false,  -- 如果不满足财产条件，标记为非法
+        isExclusive := true  -- 所有财产对象的排他性均为真
+      },
+      purpose := purpose
+    }
 
 /- 判断财产是否处于管理、使用或运输状态 -/
 def isInSpecialState (p : Property) : Bool :=
   p.state.isManaged || p.state.isUsed || p.state.isTransported
 
+/- 检查所有者是否为私人 -/
+def isPrivateOwnerType (ownerOpt : Option OwnerType) : Bool :=
+  match ownerOpt with
+  | some OwnerType.Citizen => true
+  | some OwnerType.Family => true
+  | some OwnerType.IndividualBusiness => true
+  | some OwnerType.PrivateEnterprise => true
+  | _ => false
+
 /- 判断财产是否为托管财产（辅助方法，但实际分类为公共财产） -/
 def isInTrust (p : Property) : Bool :=
-  (p.owner = OwnerType.Citizen ||
-   p.owner = OwnerType.Family ||
-   p.owner = OwnerType.IndividualBusiness ||
-   p.owner = OwnerType.PrivateEnterprise) &&
+  isPrivateOwnerType p.owner &&
   p.isLegal &&
   (p.manager.isSome || isInSpecialState p)
 
@@ -41,35 +64,32 @@ def isSpecialManagementInstitution (manager : Option ManagementInstitution) : Bo
   | _ => false
 
 /- 公共财产判定（第九十一条） -/
-def isPublicProperty (p : Property) : Prop :=
+def isPublicProperty (p : Property) : Bool :=
   match p.owner with
-  | OwnerType.State => True  -- 国有财产（第九十一条第一款第一项）
-  | OwnerType.Collective =>
+  | some OwnerType.State => true  -- 国有财产（第九十一条第一款第一项）
+  | some OwnerType.Collective =>
     -- 劳动群众集体所有的财产（第九十一条第一款第二项）
     -- 检查是否为合法认可的集体
     match p.collective with
     | some c => isLegalCollective c
-    | none => False
-  | OwnerType.SocialDonation =>
+    | none => false
+  | some OwnerType.SocialDonation =>
     -- 用于扶贫和其他公益事业的社会捐助（第九十一条第一款第三项）
     p.purpose = PropertyPurpose.PovertyAlleviation || p.purpose = PropertyPurpose.PublicWelfare
-  | OwnerType.SpecialFund =>
+  | some OwnerType.SpecialFund =>
     -- 用于扶贫和其他公益事业的专项基金（第九十一条第一款第三项）
     p.purpose = PropertyPurpose.PovertyAlleviation || p.purpose = PropertyPurpose.PublicWelfare
-  | _ =>
+  | some _ =>
     -- 在国家机关、国有公司、企业、集体企业和人民团体管理、使用或者运输中的私人财产，以公共财产论（第九十一条第二款）
-    let isPrivateOwner := p.owner = OwnerType.Citizen ||
-                         p.owner = OwnerType.Family ||
-                         p.owner = OwnerType.IndividualBusiness ||
-                         p.owner = OwnerType.PrivateEnterprise
-    isPrivateOwner &&
+    isPrivateOwnerType p.owner &&
     p.isLegal &&
     (isSpecialManagementInstitution p.manager || isInSpecialState p)
+  | none => false
 
 /- 私有财产判定（第九十二条） -/
-def isPrivateProperty (p : Property) : Prop :=
+def isPrivateProperty (p : Property) : Bool :=
   match p.owner with
-  | OwnerType.Citizen =>
+  | some OwnerType.Citizen =>
     p.isLegal && (
       -- 公民的合法收入、储蓄、房屋和其他生活资料（第九十二条第一项）
       (match p.citizenType with
@@ -88,13 +108,13 @@ def isPrivateProperty (p : Property) : Prop :=
        | some FinancialAsset.Other => true  -- 其他财产
        | none => false)
     )
-  | OwnerType.Family =>
+  | some OwnerType.Family =>
     -- 依法归个人、家庭所有的生产资料（第九十二条第二项）
     p.isLegal && p.resourceType = some ResourceType.ProductionResources
-  | OwnerType.IndividualBusiness =>
+  | some OwnerType.IndividualBusiness =>
     -- 个体户的合法财产（第九十二条第三项）
     p.isLegal
-  | OwnerType.PrivateEnterprise =>
+  | some OwnerType.PrivateEnterprise =>
     -- 私营企业的合法财产（第九十二条第三项）
     p.isLegal
-  | _ => False
+  | _ => false

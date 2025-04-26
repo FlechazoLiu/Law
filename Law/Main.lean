@@ -18,14 +18,23 @@
 import Law.Types.OwnerTypes
 import Law.Types.PropertyTypes
 import Law.Types.CollectiveTypes
+import Law.Object
 import Law.Property
 import Law.Legal
+import Law.Examples
 
 /- 项目文件结构说明:
    1. Law.Types.OwnerTypes - 所有者类型定义
    2. Law.Types.PropertyTypes - 财产类型定义
    3. Law.Types.CollectiveTypes - 集体类型定义
-   4. Law.Property - 财产结构和财产相关函数
-   5. Law.Legal - 法律判定和法定财产类型
-   6. Law.Examples - 示例验证
+   4. Law.Object - 基础对象定义
+   5. Law.Property - 财产结构(继承自Object)和财产相关函数
+   6. Law.Legal - 法律判定和法定财产类型
+   7. Law.Examples - 示例验证
 -/
+
+/- 主函数入口 -/
+def main : IO Unit := do
+  IO.println "刑法财产相关条款形式化"
+  IO.println "运行示例代码..."
+  Examples.runAllExamples
